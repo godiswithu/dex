@@ -1,0 +1,59 @@
+# Graph Coloring Problem using Backtracking
+
+def is_valid(graph, vertex, color_list, col):
+    """
+    Check if it's safe to assign color 'col' to vertex
+    """
+    for i in range(len(graph)):
+        if graph[vertex][i] == 1 and color_list[i] == col:
+            return False
+    return True
+
+def graph_coloring(graph, m, color_list, vertex=0):
+    """
+    Recursive function to assign colors to graph using backtracking
+    """
+    if vertex == len(graph):
+        return True
+    
+    for col in range(1, m + 1):
+        if is_valid(graph, vertex, color_list, col):
+            color_list[vertex] = col
+            if graph_coloring(graph, m, color_list, vertex + 1):
+                return True
+            color_list[vertex] = 0  # Backtrack
+    
+    return False
+
+def main():
+    print("===== GRAPH COLORING PROBLEM =====\n")
+    
+    # Step 1: Input number of vertices
+    n = int(input("Enter number of vertices in the graph: "))
+    
+    # Step 2: Input adjacency matrix
+    print("\nEnter adjacency matrix (row by row, 0 or 1):")
+    graph = []
+    for i in range(n):
+        row = list(map(int, input(f"Row {i + 1}: ").split()))
+        if len(row) != n:
+            print("Error: Row length must be equal to number of vertices")
+            return
+        graph.append(row)
+    
+    # Step 3: Input maximum number of colors
+    m = int(input("\nEnter maximum number of colors: "))
+    
+    # Step 4: Initialize color assignment list
+    color_list = [0] * n
+    
+    # Step 5: Solve using backtracking
+    if graph_coloring(graph, m, color_list):
+        print("\nSolution exists! Assigned colors:")
+        for i, color in enumerate(color_list):
+            print(f"Node {i} -> Color {color}")
+    else:
+        print("\nNo solution exists with given number of colors.")
+
+if __name__ == "__main__":
+    main()
