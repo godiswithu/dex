@@ -1,0 +1,112 @@
+# Aim: To perform large integer multiplication using Divide and Conquer
+
+# Function: Dumb Divide and Conquer Multiplication
+def dc_dumb_multiplication(A, B):
+    # Base Case
+    if A < 10 or B < 10:
+        return A * B
+    
+    # Convert to strings for splitting
+    strA, strB = str(A), str(B)
+    n = max(len(strA), len(strB))
+    
+    # Equalize lengths
+    while len(strA) < n:
+        strA = '0' + strA
+    while len(strB) < n:
+        strB = '0' + strB
+    
+    # Make even length
+    if n % 2 != 0:
+        n += 1
+        strA = strA.zfill(n)
+        strB = strB.zfill(n)
+    
+    # Split into halves
+    mid = n // 2
+    a1, a0 = int(strA[:mid]), int(strA[mid:])
+    b1, b0 = int(strB[:mid]), int(strB[mid:])
+    
+    # Recursive calls
+    c2 = dc_dumb_multiplication(a1, b1)
+    c0 = dc_dumb_multiplication(a0, b0)
+    x = dc_dumb_multiplication(a1, b0)
+    y = dc_dumb_multiplication(a0, b1)
+    
+    c1 = x + y
+    
+    # Combine results
+    result = c2 * 10**n + c1 * 10**(n//2) + c0
+    return result
+
+
+# -----------------------------------------------------------
+# Function: Clever Divide and Conquer Multiplication (Karatsuba)
+def dc_clever_multiplication(A, B):
+    # Base Case
+    if A < 10 or B < 10:
+        return A * B
+    
+    # Convert to strings for splitting
+    strA, strB = str(A), str(B)
+    n = max(len(strA), len(strB))
+    
+    # Equalize lengths
+    while len(strA) < n:
+        strA = '0' + strA
+    while len(strB) < n:
+        strB = '0' + strB
+    
+    # Make even length
+    if n % 2 != 0:
+        n += 1
+        strA = strA.zfill(n)
+        strB = strB.zfill(n)
+    
+    # Split into halves
+    mid = n // 2
+    a1, a0 = int(strA[:mid]), int(strA[mid:])
+    b1, b0 = int(strB[:mid]), int(strB[mid:])
+    
+    # Recursive calls
+    c2 = dc_clever_multiplication(a1, b1)
+    c0 = dc_clever_multiplication(a0, b0)
+    x = dc_clever_multiplication(a1 + a0, b1 + b0)
+    
+    # Compute middle term
+    c1 = x - c2 - c0
+    
+    # Combine results
+    result = c2 * 10**n + c1 * 10**(n//2) + c0
+    return result
+
+
+# -----------------------------------------------------------
+# Main Section (User Input + Output)
+if __name__ == "__main__":
+    print("---------------------------------------------------")
+    print("Large Integer Multiplication using Divide and Conquer")
+    print("---------------------------------------------------")
+    
+    # Take inputs from user
+    A = int(input("Enter first large integer (A): "))
+    B = int(input("Enter second large integer (B): "))
+    print("---------------------------------------------------")
+    
+    # Dumb Method
+    result_dumb = dc_dumb_multiplication(A, B)
+    print(f"[Dumb Approach Result]  : {result_dumb}")
+    
+    # Clever Method
+    result_clever = dc_clever_multiplication(A, B)
+    print(f"[Clever Approach Result]: {result_clever}")
+    
+    # Built-in check
+    print(f"[Python Built-in Result]: {A * B}")
+    print("---------------------------------------------------")
+    
+    # Verify correctness
+    if result_clever == A * B and result_dumb == A * B:
+        print(" Both methods give correct and matching results!")
+    else:
+        print(" Results do not match — check logic or inputs.")
