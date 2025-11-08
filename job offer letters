@@ -1,0 +1,112 @@
+import heapq
+import math
+
+# state space tree node
+class Node:
+    
+    # stores parent node of current node
+    # helps in tracing path when answer is found
+    def __init__(self, x, y, assigned, parent):
+        self.workerID = x
+        self.jobID = y
+        self.assigned = assigned[:]  # copy list
+        self.parent = parent
+        self.pathCost = 0
+        self.cost = 0
+
+    def __lt__(self, other):
+        return self.cost < other.cost
+
+# Function to calculate the least promising cost
+# of node after worker x is assigned to job y.
+def calculateCost(costMat, x, y, assigned):
+    n = len(costMat)
+    cost = 0
+    
+    # to store unavailable jobs
+    available = [True] * n
+    
+    # start from next worker
+    for i in range(x + 1, n):
+        minVal = float('inf')
+        minIndex = -1
+        
+        # do for each job
+        for j in range(n):
+            
+            # if job is unassigned
+            if (not assigned[j]) and available[j] and costMat[i][j] < minVal:
+                
+                # store job number
+                minIndex = j
+                
+                # store cost
+                minVal = costMat[i][j]
+        
+        # add cost of next worker
+        cost += minVal
+        
+        # job becomes unavailable
+        available[minIndex] = False
+    
+    return cost
+
+# Finds minimum cost using Branch and Bound.
+def findMinCost(costMat):
+    n = len(costMat)
+    
+    # Create a priority queue to store
+    # live nodes of search tree;
+    pq = []
+    
+    # initialize heap to dummy node with cost 0
+    assigned = [False] * n
+    root = Node(-1, -1, assigned, None)
+    root.pathCost = root.cost = 0
+    root.workerID = -1
+    
+    # Add dummy node to list of live nodes;
+    heapq.heappush(pq, root)
+    
+    while pq:
+        
+        # Find a live node with least estimated cost
+        minNode = heapq.heappop(pq)
+        
+        # The found node is deleted from the list
+        
+        # i stores next worker
+        i = minNode.workerID + 1
+        
+        # if all workers are assigned a job
+        if i == n:
+            return minNode.cost
+        
+        # do for each job
+        for j in range(n):
+            
+            # If unassigned
+            if not minNode.assigned[j]:
+                
+                # create a new tree node
+                child = Node(i, j, minNode.assigned, minNode)
+                child.assigned[j] = True
+                
+                # cost for ancestors nodes including current node
+                child.pathCost = minNode.pathCost + costMat[i][j]
+                
+                # calculate its lower bound
+                child.cost = child.pathCost + calculateCost(costMat, i, j, child.assigned)
+                
+                # Add child to list of live nodes;
+                heapq.heappush(pq, child)
+    return -1
+
+if __name__ == "__main__":
+    costMat = [
+        [9, 2, 7, 8],
+        [6, 4, 3, 7],
+        [5, 8, 1, 8],
+        [7, 6, 9, 4]
+    ]
+    print(findMinCost(costMat))
