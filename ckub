@@ -1,0 +1,63 @@
+
+def greedy_assignment(cost_matrix):
+    """
+    Assign students to clubs using a greedy strategy (minimum cost per student)
+    """
+    n = len(cost_matrix)
+    assigned_clubs = [-1] * n   # Store assigned club for each student
+    used_clubs = [False] * n    # Track assigned clubs
+    total_cost = 0
+    
+    for student in range(n):
+        min_cost = float('inf')
+        chosen_club = -1
+        
+        for club in range(n):
+            if not used_clubs[club] and cost_matrix[student][club] < min_cost:
+                min_cost = cost_matrix[student][club]
+                chosen_club = club
+        
+        assigned_clubs[student] = chosen_club
+        used_clubs[chosen_club] = True
+        total_cost += min_cost
+    
+    return assigned_clubs, total_cost
+
+def main():
+    print("===== CLUB ASSIGNMENT PROBLEM =====\n")
+    
+    # Step 1: Input number of students/clubs
+    n = int(input("Enter number of students/clubs: "))
+    
+    # Step 2: Input cost matrix
+    print("\nEnter the cost matrix (each row separated by space):")
+    cost_matrix = []
+    for i in range(n):
+        row = list(map(int, input(f"Student {i+1}: ").split()))
+        if len(row) != n:
+            print("Error: Each row must have exactly", n, "elements.")
+            return
+        cost_matrix.append(row)
+    
+    # Step 3: Get assignment using greedy strategy
+    assigned_clubs, total_cost = greedy_assignment(cost_matrix)
+    
+    # Step 4: Print results
+    print("\nAssigned clubs for each student:")
+    for student, club in enumerate(assigned_clubs):
+        print(f"Student {student+1} -> Club {club+1}")
+    
+    print("\nTotal cost of assignment:", total_cost)
+
+if __name__ == "__main__":
+    main()
+
+HOW IT WORKS
+
+For each student, find the club with minimum cost that is still unassigned.
+
+Assign that club to the student and mark the club as used.
+
+Repeat until all students are assigned.
+
+Calculate total cost by summing assigned costs.
