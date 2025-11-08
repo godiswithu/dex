@@ -1,0 +1,40 @@
+import concurrent.futures
+
+# Standard partition function
+def partition(arr, low, high):
+    pivot = arr[high]
+    i = low - 1
+    for j in range(low, high):
+        if arr[j] <= pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    arr[i + 1], arr[high] = arr[high], arr[i + 1]
+    return i + 1
+
+# Parallel QuickSort function
+def parallel_quick_sort(arr, low, high, executor=None):
+    if low < high:
+        pi = partition(arr, low, high)
+
+        if executor:  # If executor is provided, run in parallel
+            # Submit two tasks for left and right partitions
+            left_future = executor.submit(parallel_quick_sort, arr, low, pi - 1, executor)
+            right_future = executor.submit(parallel_quick_sort, arr, pi + 1, high, executor)
+            # Wait for both to finish
+            left_future.result()
+            right_future.result()
+        else:
+            # Sequential fallback
+            parallel_quick_sort(arr, low, pi - 1)
+            parallel_quick_sort(arr, pi + 1, high)
+
+# Driver code
+if __name__ == "__main__":
+    arr = [10, 7, 8, 9, 1, 5, 12, 3]
+    print("Original Array:", arr)
+
+    # Create a thread pool executor
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        parallel_quick_sort(arr, 0, len(arr) - 1, executor)
+
+    print("Sorted Array:  ", arr)
