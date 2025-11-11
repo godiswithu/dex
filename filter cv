@@ -1,0 +1,172 @@
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+
+class ImageFilterApp:
+    def __init__(self, image_path):
+        self.image = cv2.imread(image_path, 0)
+        if self.image is None:
+            print(f"Error: Could not load image from path: {image_path}")
+            return
+        self.run()
+
+    def apply_median_filter(self):
+        filtered = cv2.medianBlur(self.image, 5)
+        self.show_images(filtered, "Median Filter")
+
+    def apply_sobel_filter(self):
+        sobelx = cv2.Sobel(self.image, cv2.CV_64F, 1, 0, ksize=5)
+        sobely = cv2.Sobel(self.image, cv2.CV_64F, 0, 1, ksize=5)
+        filtered = cv2.magnitude(sobelx, sobely)
+        self.show_images(filtered, "Sobel Filter")
+
+    def apply_gaussian_filter(self):
+        filtered = cv2.GaussianBlur(self.image, (5, 5), 0)
+        self.show_images(filtered, "Gaussian Filter")
+
+    def apply_average_filter(self):
+        kernel = np.ones((5, 5), np.float32) / 25
+        filtered = cv2.filter2D(self.image, -1, kernel)
+        self.show_images(filtered, "Averaging Filter")
+
+    def show_images(self, filtered, title):
+        plt.figure(figsize=(10, 5))
+        plt.subplot(1, 2, 1)
+        plt.title("Original")
+        plt.imshow(self.image, cmap='gray')
+        plt.axis('off')
+
+        plt.subplot(1, 2, 2)
+        plt.title(title)
+        plt.imshow(filtered, cmap='gray')
+        plt.axis('off')
+        plt.show()
+
+    def run(self):
+        while True:
+            print("\nImage Filtering Application")
+            print("1. Apply Median Filter")
+            print("2. Apply Sobel Filter")
+            print("3. Apply Gaussian Filter")
+            print("4. Apply Averaging Filter")
+            print("5. Exit")
+
+            choice = input("Enter your choice (1-5): ")
+
+            if choice == '1':
+                self.apply_median_filter()
+            elif choice == '2':
+                self.apply_sobel_filter()
+            elif choice == '3':
+                self.apply_gaussian_filter()
+            elif choice == '4':
+                self.apply_average_filter()
+            elif choice == '5':
+                print("Exiting...")
+                break
+            else:
+                print("Invalid choice! Try again.")
+
+# 👉 Change this line to your image name or path
+image_path = "cv black.jpg"  # or "C:/Users/dipan/Pictures/road.jpg"
+
+app = ImageFilterApp(image_path)
+
+
+in case:
+!pip install opencv-python matplotlib
+pip install "numpy<2"
+pip install numpy==1.26.4
+pip install opencv-python
+pip install numpy
+
+
+Explanation:
+Filter	How it works	Use Case
+Median Filter	Replaces each pixel with the median value in a local neighborhood	Removes salt-and-pepper noise without blurring edges
+Sobel Filter	Computes gradients in x and y directions → combines them to detect edges	Edge detection, shape detection
+Gaussian Filter	Convolves image with a Gaussian kernel → smooths image	Noise reduction, smoothing, pre-processing
+Averaging Filter	Computes mean of local neighborhood → replaces center pixel	Simple smoothing, but edges get blurred
+
+import cv2  # OpenCV library for image processing (reading, filtering, edge detection)
+import numpy as np  # NumPy library for numerical operations (arrays, kernels)
+from matplotlib import pyplot as plt  # matplotlib library for plotting/displaying images
+
+# Define a class for image filtering application
+class ImageFilterApp:
+    # Constructor method, called when creating an object of the class
+    def __init__(self, image_path):
+        self.image = cv2.imread(image_path, 0)  # Read image in grayscale mode (0)
+        if self.image is None:  # Check if the image was loaded successfully
+            print(f"Error: Could not load image from path: {image_path}")  # Print error if file not found
+            return  # Exit constructor if image not loaded
+        self.run()  # Start the interactive menu
+
+    # Apply median filter to remove salt-and-pepper noise
+    def apply_median_filter(self):
+        filtered = cv2.medianBlur(self.image, 5)  # Apply median filter with kernel size 5x5
+        self.show_images(filtered, "Median Filter")  # Display original and filtered images
+
+    # Apply Sobel filter to detect edges
+    def apply_sobel_filter(self):
+        sobelx = cv2.Sobel(self.image, cv2.CV_64F, 1, 0, ksize=5)  # Gradient in x-direction
+        sobely = cv2.Sobel(self.image, cv2.CV_64F, 0, 1, ksize=5)  # Gradient in y-direction
+        filtered = cv2.magnitude(sobelx, sobely)  # Combine x and y gradients to get edge magnitude
+        self.show_images(filtered, "Sobel Filter")  # Display images
+
+    # Apply Gaussian filter for smoothing
+    def apply_gaussian_filter(self):
+        filtered = cv2.GaussianBlur(self.image, (5, 5), 0)  # Apply Gaussian blur with 5x5 kernel, sigma=0 (auto)
+        self.show_images(filtered, "Gaussian Filter")  # Display images
+
+    # Apply averaging filter (simple mean smoothing)
+    def apply_average_filter(self):
+        kernel = np.ones((5, 5), np.float32) / 25  # Create 5x5 averaging kernel (all elements sum to 1)
+        filtered = cv2.filter2D(self.image, -1, kernel)  # Convolve kernel with image
+        self.show_images(filtered, "Averaging Filter")  # Display images
+
+    # Function to display original and filtered images side by side
+    def show_images(self, filtered, title):
+        plt.figure(figsize=(10, 5))  # Set figure size for display
+        plt.subplot(1, 2, 1)  # First subplot (original image)
+        plt.title("Original")  # Title of subplot
+        plt.imshow(self.image, cmap='gray')  # Display original image in grayscale
+        plt.axis('off')  # Hide axes
+
+        plt.subplot(1, 2, 2)  # Second subplot (filtered image)
+        plt.title(title)  # Title based on filter applied
+        plt.imshow(filtered, cmap='gray')  # Display filtered image in grayscale
+        plt.axis('off')  # Hide axes
+        plt.show()  # Render the figure
+
+    # Interactive menu loop
+    def run(self):
+        while True:  # Infinite loop until user chooses exit
+            print("\nImage Filtering Application")  # Menu header
+            print("1. Apply Median Filter")  # Menu option
+            print("2. Apply Sobel Filter")  # Menu option
+            print("3. Apply Gaussian Filter")  # Menu option
+            print("4. Apply Averaging Filter")  # Menu option
+            print("5. Exit")  # Menu option to exit
+
+            choice = input("Enter your choice (1-5): ")  # Ask user for input
+
+            if choice == '1':  # If user chooses 1
+                self.apply_median_filter()  # Apply median filter
+            elif choice == '2':  # If user chooses 2
+                self.apply_sobel_filter()  # Apply Sobel filter
+            elif choice == '3':  # If user chooses 3
+                self.apply_gaussian_filter()  # Apply Gaussian filter
+            elif choice == '4':  # If user chooses 4
+                self.apply_average_filter()  # Apply averaging filter
+            elif choice == '5':  # If user chooses 5
+                print("Exiting...")  # Print exit message
+                break  # Exit loop and program
+            else:  # If user enters invalid input
+                print("Invalid choice! Try again.")  # Prompt again
+
+# Main program starts here
+image_path = "cv black.jpg"  # Name/path of the image file (should be in same folder as notebook)
+
+app = ImageFilterApp(image_path)  # Create object of class and start program
+
